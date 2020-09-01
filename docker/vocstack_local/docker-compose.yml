@@ -1,0 +1,136 @@
+version: "3.5"
+
+x-log-config: &log-config
+  logging:
+    driver: json-file
+    options:
+      max-size: "20m"
+      max-file: "10"
+
+services:
+  dvotenode:
+    build:
+      context: ../../external/go-dvote
+    image: "vocdoni/go-dvote"
+    env_file: dvotenode.env
+    volumes:
+      - "dvote-run:/app/run"
+    ports:
+      - "9090:9090"
+      - "9091:9091"
+      - "4001:4001"
+      - "4171:4171"
+      - "5001:5001"
+      - "9096:9096"
+      - "26656:26656"
+      - "26657:26657"
+    restart: always
+    <<: *log-config
+
+  traefik:
+    image: traefik:2.2
+    ports:
+      - 8081:8081
+      - 8082:8082
+    volumes:
+      - traefik:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web1.address=:8081"
+      - "--entrypoints.web2.address=:8082"
+      - "--log.level=DEBUG"
+    restart: always
+    <<: *log-config
+
+  manager-backend:
+    image: vocdoni/manager-backend
+    build:
+      context: ../../external/manager-backend
+    env_file:
+      - manager-backend.env
+    volumes:
+      - "backend-run:/app/run"
+    depends_on:
+      - manager-db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.manager-backend.rule=Host(`host.local`) && Path(`/api`)"
+      - "traefik.http.routers.manager-backend.entrypoints=web1"
+      - "traefik.http.routers.manager-backend.service=manager-backend"
+      - "traefik.http.services.manager-backend.loadbalancer.server.port=8000"
+    <<: *log-config
+
+  nginx-manager-frontend:
+    image: nginx
+    volumes:
+      - manager-frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - manager-backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx-manager-frontend.rule=Host(`host.local`)"
+      - "traefik.http.routers.nginx-manager-frontend.entrypoints=web1"
+      - "traefik.http.routers.nginx-manager-frontend.service=nginx-manager-frontend"
+      - "traefik.http.services.nginx-manager-frontend.loadbalancer.server.port=80"
+    <<: *log-config
+
+  nginx-gw:
+    image: nginx
+    volumes:
+      - ./gateways.json:/usr/share/nginx/html/gateways.json:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx-gw.rule=Host(`host.local`) && Path(`/gateways.json`)"
+      - "traefik.http.routers.nginx-gw.entrypoints=web1"
+      - "traefik.http.routers.nginx-gw.service=nginx-gw"
+      - "traefik.http.services.nginx-gw.loadbalancer.server.port=80"
+    <<: *log-config
+
+  manager-frontend:
+    image: vocdoni/manager-frontend
+    build:
+      context: ../../external/manager-frontend
+    env_file:
+      - manager-frontend.env
+    restart: "no"
+    volumes:
+      - manager-frontend:/app/build
+      - ./gateways.json:/usr/share/nginx/html
+
+  manager-db:
+    image: postgres:12
+    env_file:
+      - manager-db.env
+    volumes:
+      - db:/data/postgres
+    restart: unless-stopped
+    <<: *log-config
+
+  vocexplorer:
+    image: "vocdoni/vocexplorer"
+    build:
+      context: ../../external/vocexplorer
+    env_file: vocexplorer.env
+    volumes:
+      - "vocexplorer:/data/vocexplorer"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vocexplorer.rule=Host(`host.local`)"
+      - "traefik.http.routers.vocexplorer.entrypoints=web2"
+      - "traefik.http.routers.vocexplorer.service=vocexplorer"
+      - "traefik.http.services.vocexplorer.loadbalancer.server.port=8081"
+    restart: always
+    depends_on:
+      - dvotenode
+    <<: *log-config
+
+volumes:
+  dvote-run:
+  manager-frontend:
+  traefik:
+  db:
+  backend-run:
+  vocexplorer:

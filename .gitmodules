@@ -1,0 +1,12 @@
+[submodule "external/go-dvote"]
+	path = external/go-dvote
+	url = https://gitlab.com/vocdoni/go-dvote
+[submodule "external/manager-frontend"]
+	path = external/manager-frontend
+	url = https://gitlab.com/vocdoni/manager/manager-frontend
+[submodule "external/manager-backend"]
+	path = external/manager-backend
+	url = https://gitlab.com/vocdoni/manager/manager-backend
+[submodule "external/vocexplorer"]
+	path = external/vocexplorer
+	url = https://gitlab.com/vocdoni/vocexplorer
