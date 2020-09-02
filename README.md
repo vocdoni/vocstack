@@ -2,7 +2,7 @@
 
 Vocdoni stack deployment on docker and k8s
 
-# Local compose
+### Local docker compose
 
 To deploy a local development environment, first you need to add the following to `/etc/hosts`:
 
@@ -18,6 +18,8 @@ If you want to use a diferent branch for a specific component, you can do like f
 git submodule set-branch --branch release-0.5 -- external/go-dvote
 ```
 
-## k8s
+To undeploy, cd to `docker/vocstack_local` and run `docker-compose down`, with `-v` flag to delete volumes (all data).
+
+### k8s
 
 To-Do
