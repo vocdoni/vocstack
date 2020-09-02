@@ -1,6 +1,7 @@
 [submodule "external/go-dvote"]
 	path = external/go-dvote
 	url = https://gitlab.com/vocdoni/go-dvote
+	branch = master
 [submodule "external/manager-frontend"]
 	path = external/manager-frontend
 	url = https://gitlab.com/vocdoni/manager/manager-frontend

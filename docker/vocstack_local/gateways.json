@@ -8,12 +8,12 @@
     ],
     "dvote": [
       {
-        "uri": "ws://host.local/dvote",
+        "uri": "ws://vocstack.local/dvote",
         "apis": ["file", "vote", "census", "results"],
         "pubKey": "0267bec8e9573e5f11b4933a994896a98b412c3a5f0c6c5db066e9741692966e67"
       },
       {
-        "uri": "ws://host.local:9090/dvote",
+        "uri": "ws://vocstack.local:9090/dvote",
         "apis": ["file", "vote", "census", "results"],
         "pubKey": "0267bec8e9573e5f11b4933a994896a98b412c3a5f0c6c5db066e9741692966e67"
       }
@@ -28,12 +28,12 @@
     ],
     "dvote": [
       {
-        "uri": "ws://host.local:9090/dvote",
+        "uri": "ws://vocstack.local:9090/dvote",
         "apis": ["file", "vote", "census", "results"],
         "pubKey": "02a37491755d0f9f1c594edf663932f9a1c048772cb617702ff97a36d0a31894c5"
       },
       {
-        "uri": "ws://host.local:9090/dvote",
+        "uri": "ws://vocstack.local:9090/dvote",
         "apis": ["file", "vote", "census", "results"],
         "pubKey": "02a37491755d0f9f1c594edf663932f9a1c048772cb617702ff97a36d0a31894c5"
       }
