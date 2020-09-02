@@ -10,7 +10,7 @@ if ! ping -c 1 vocstack.local >/dev/null; then
 fi
 
 echo -e "${GREEN}Updating submodules...${NOCOLOR}"
-git submodule update --recursive --remote
+git submodule update --recursive --remote --init
 
 pushd docker/vocstack_local
 echo -e "${GREEN}Building components...${NOCOLOR}"
