@@ -16,7 +16,6 @@ services:
     volumes:
       - "dvote-run:/app/run"
     ports:
-      - "80:9090"
       - "9090:9090"
       - "9091:9091"
       - "4001:4001"
