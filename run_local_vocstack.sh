@@ -5,6 +5,10 @@ RED="\033[1;31m"
 GREEN="\033[1;32m"
 NOCOLOR="\033[0m"
 
+export DOCKER_CLI_EXPERIMENTAL=enabled
+export COMPOSE_DOCKER_CLI_BUILD=1
+export DOCKER_BUILDKIT=1
+
 if ! ping -c 1 vocstack.local >/dev/null; then
     echo -e "${RED}vocstack.local does not exist. Add \"127.0.0.1 vocstack.local\" to your /etc/hosts${NOCOLOR}"
     exit 1
