@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dvote-gateway
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      component: dvote-gateway
+  template:
+    metadata:
+      labels:
+        component: dvote-gateway
+    spec:
+      volumes:
+        - name: dvote-gateway-run-volume
+          persistentVolumeClaim:
+            claimName: dvote-gateway-run-volume-claim
+      containers:
+        - name: dvote-gateway
+          image: vocdoni/go-dvote:latest
+          ports:
+            - containerPort: 9090
+            - containerPort: 26657
+            - containerPort: 26656
+            - containerPort: 4001
+            - containerPort: 5001
+            - containerPort: 4171
+          volumeMounts:
+            - name: dvote-gateway-run-volume
+              mountPath: /app/run
+              subPath: dvote-gateway-run
+          resources:
+            requests:
+              memory: "2Gi"
+          env:
+            - name: DVOTE_DATADIR
+              value: /app/run
+            - name: DVOTE_LOGLEVEL
+              value: debug
+            - name: DVOTE_DEV
+              value: "True"
+            - name: DVOTE_API_LISTENHOST
+              value: 0.0.0.0
+            - name: DVOTE_ETHCONFIG_SIGNINGKEY
+              value: 6aae1d165dd9776c580b8fdaf8622e39c5f943c715e20690080bbfce2c760223
+            - name: DVOTE_VOCHAINCONFIG_RPCLISTEN
+              value: 0.0.0.0:26657
+            - name: DVOTE_VOCHAINCONFIG_NOWAITSYNC
+              value: "True"
+            - name: DVOTE_W3CONFIG_ENABLED
+              value: "False"
+            - name: DVOTE_VOCHAIN
+              value: dev

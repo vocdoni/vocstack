@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/default-backend: dvote-manager-frontend-cluster-ip-service
+    #nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /dvote
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-cluster-ip-service
+                port:
+                  number: 9090
+          - path: /ping
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-cluster-ip-service
+                port:
+                  number: 9090
+          - path: /api/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: dvote-manager-backend-cluster-ip-service
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dvote-manager-frontend-cluster-ip-service
+                port:
+                  number: 80

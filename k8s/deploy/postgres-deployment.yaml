@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim
+      containers:
+        - name: postgres
+          image: postgres:12
+          resources:
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /data/postgres
+              subPath: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              value: vocdoni0
+            - name: POSTGRES_DB
+              value: vocdonimgr
+            - name: POSTGRES_HOST
+              value: postgres-cluster-ip-service
+            - name: POSTGRES_USER
+              value: vocdoni
+            - name: PGDATA
+              value: /data/postgres

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dvote-manager-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: dvote-manager-backend
+  template:
+    metadata:
+      labels:
+        component: dvote-manager-backend
+    spec:
+      volumes:
+        - name: dvote-manager-backend-run-volume
+          persistentVolumeClaim:
+            claimName: dvote-manager-backend-run-volume-claim
+      containers:
+        - name: dvote-manager-backend
+          image: vocdoni/manager-backend:latest
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: dvote-manager-backend-run-volume
+              mountPath: /app/run
+              subPath: dvote-manager-backend-run
+          resources:
+            # requests:
+            #   memory: "1Gi"
+          env:
+            - name: DVOTE_DATADIR
+              value: /app/run
+            - name: DVOTE_API_ROUTE
+              value: /api
+            - name: DVOTE_DB_PORT
+              value: "5432"
+            - name: DVOTE_DB_HOST
+              value: postgres-cluster-ip-service
+            - name: DVOTE_DB_DBNAME
+              value: vocdonimgr
+            - name: DVOTE_DB_PASSWORD
+              value: vocdoni0
+            - name: DVOTE_DB_USER
+              value: vocdoni
+            - name: DVOTE_SIGNINGKEY
+              value: caf147e2cd348b637f77279eab1e5fc426ea0ad70c8da5172194d44005057c71

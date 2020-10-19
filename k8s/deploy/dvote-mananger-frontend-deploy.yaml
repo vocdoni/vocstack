@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dvote-manager-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: dvote-manager-frontend
+  template:
+    metadata:
+      labels:
+        component: dvote-manager-frontend
+    spec:
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: dvote-configmap
+            items:
+              - key: frontend_nginx_default
+                path: default
+      containers:
+        - name: dvote-manager-frontend
+          image: vocdoni/manager-frontend:nginx-latest
+          resources:
+            requests:
+              memory: "1Gi"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/nginx/sites-available
+              readOnly: true
+              name: nginx-conf
+          env:
+            - name: ETH_NETWORK_ID
+              value: xdai
+            - name: MANAGER_BACKEND_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: dvote-configmap
+                  key: domain
+            - name: MANAGER_BACKEND_HOST
+              value: ws://$(MANAGER_BACKEND_URI)/api/manager
+            - name: REGISTER_URL
+              value: ws://$(MANAGER_BACKEND_URI)/api/actions/register
+            - name: ACTION_VISIBILITY_URL
+              value: http://$(MANAGER_BACKEND_URI)/api/actions/status
+            - name: BOOTNODES_URL_READ_ONLY
+              value: https://bootnodes.vocdoni.net/gateways.dev.json
+            - name: BOOTNODES_URL_RW
+              value: https://bootnodes.vocdoni.net/gateways.dev.json
+            - name: MANAGER_BACKEND_PUB_KEY
+              value: 02b047d005b0befa359c344d7623021396d97da9a23a098b644eefb49f3c6054c1
