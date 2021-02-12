@@ -56,7 +56,7 @@ services:
       - manager-db
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.manager-backend.rule=Host(`vocstack.local`) && Path(`/api`)"
+      - "traefik.http.routers.manager-backend.rule=Host(`vocstack.local`) && PathPrefix(`/api`)"
       - "traefik.http.routers.manager-backend.entrypoints=web1"
       - "traefik.http.routers.manager-backend.service=manager-backend"
       - "traefik.http.services.manager-backend.loadbalancer.server.port=8000"
@@ -126,7 +126,19 @@ services:
     depends_on:
       - dvotenode
     <<: *log-config
-
+ 
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    ports:
+      - "8545:8545"
+    volumes:
+      - ganache:/ganache_data
+    command:
+      - --fork 
+      - 'https://dai.poa.network'
+      - --account="0x6009ee2eafae1cfc5ff24fbafa51149cb8af02df92d3f0b80ed1b3042b47ef4d,100" # Fund 0xF1f6f6f60aD3f7A1D6733fb7a0dabAA4B7FC10B0
+      - --debug
+  
 volumes:
   dvote-run:
   manager-frontend:
@@ -134,3 +146,4 @@ volumes:
   db:
   backend-run:
   vocexplorer:
+  ganache:

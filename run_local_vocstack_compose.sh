@@ -25,3 +25,5 @@ echo -e "${GREEN}Building components...${NOCOLOR}"
 docker-compose up -d
 
 echo -e "${GREEN}Ready! \nFrontend running at http://vocstack.local:8081\nVocexplorer running at http://vocstack.local:8082${NOCOLOR}"
+echo
+echo -e "${GREEN}Use the following data to import a funded entity:\nSeed: 0x39ba4f301e2f2baad63ec8ef4435969257082105b71bc5394e8acbcc32e34149\nPassphrase: Vocstack1!${NOCOLOR}"
